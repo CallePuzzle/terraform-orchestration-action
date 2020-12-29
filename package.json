@@ -1,0 +1,17 @@
+{
+  "name": "terraform-orchestration-action",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "license": "GNU",
+  "scripts": {
+    "build": "npx ncc build src/main.ts -o dist",
+    "test": "npx jest"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.6"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.3"
+  }
+}
