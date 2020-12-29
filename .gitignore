@@ -105,3 +105,6 @@ dist
 
 # PhpStorm
 .idea
+
+# Terraform
+.terraform*
