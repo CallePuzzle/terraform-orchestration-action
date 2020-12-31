@@ -15,8 +15,9 @@ export const getGitModifiedDirectories = async (basepath: string, base_ref: stri
             if (file.match(re)) {
                 return path.dirname(file).replace(re, '');
             }
-        }).filter(file => {
-            return file !== undefined;
+        }).filter((file, index, self) => {
+            // no undefined + unique();
+            return file !== undefined && self.indexOf(file) === index;
         });
     }
     catch (e) {
