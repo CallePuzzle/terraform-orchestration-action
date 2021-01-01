@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git'
-const path = require('path')
+import path from 'path'
 
 export const getGitModifiedDirectories = async (basepath: string, base_ref: string, head_ref: string) => {
   const re = new RegExp('^' + basepath)
