@@ -8,20 +8,20 @@ export const getGitModifiedDirectories = async (basepath: string, base_ref: stri
         binary: 'git',
         maxConcurrentProcesses: 1,
     };
-    try {
-        const git: SimpleGit = simpleGit(options);
-        const affectedFiles = await git.diff(['--name-only', base_ref, head_ref]);
-        return affectedFiles.split('\n').map(file => {
-            if (file.match(re)) {
-                return path.dirname(file).replace(re, '');
-            }
-        }).filter((file, index, self) => {
-            // no undefined + unique();
-            return file !== undefined && self.indexOf(file) === index;
+    const git: SimpleGit = simpleGit(options);
+    return await git.diff(['--name-only', base_ref, head_ref])
+        .then(r => {
+            return r.split('\n').map(file => {
+                if (file.match(re)) {
+                    return path.dirname(file).replace(re, '');
+                }
+            }).filter((file, index, self) => {
+                // no undefined + unique();
+                return file !== undefined && self.indexOf(file) === index;
+            });
+        })
+        .catch(e => {
+            console.log(e);
+            return null;
         });
-    }
-    catch (e) {
-        console.log(e);
-        return null;
-    }
 };

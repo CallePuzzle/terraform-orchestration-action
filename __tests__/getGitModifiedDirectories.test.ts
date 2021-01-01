@@ -1,4 +1,3 @@
-jest.mock('@actions/core');
 import {getGitModifiedDirectories} from "../src/getGitModifiedDirectories";
 
 test('get modified directories', async () => {

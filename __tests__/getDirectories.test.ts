@@ -1,4 +1,3 @@
-jest.mock('@actions/core');
 import {getDirectories} from "../src/getDirectories";
 
 test('get directories', () => {
