@@ -3,15 +3,16 @@ jest.mock('@actions/core')
 import path from 'path'
 
 test('check main git path', () => {
-    expect(checkMainGitPath()).resolves.toEqual(true)
+    checkMainGitPath().then(r => {
+        expect(r).toEqual(true)
+    })
+
 })
 
 test('check main git path: fail', () => {
-    try {
-        process.chdir(__dirname);
-        checkMainGitPath()
-    } catch (e) {
+    process.chdir(__dirname);
+    checkMainGitPath().catch(e => {
         expect(e).not.toBeNull()
-    }
-    process.chdir(path.join(__dirname, '../'));
+    })
+    process.chdir(path.join(__dirname, '../'))
 })
