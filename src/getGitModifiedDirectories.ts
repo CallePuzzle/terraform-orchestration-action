@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import simpleGit, { SimpleGit, SimpleGitOptions } from 'simple-git'
 import path from 'path'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const getGitModifiedDirectories = async (basepath: string, base_ref: string, head_ref: string): Promise<Array<any>> => {
     const re = new RegExp('^' + basepath)
     const options: SimpleGitOptions = {
