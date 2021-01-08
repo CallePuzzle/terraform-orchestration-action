@@ -2610,7 +2610,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setWorkspace = exports.runTerraform = void 0;
+exports.setWorkspace = exports.execTerraform = void 0;
 const core = __importStar(__webpack_require__(470));
 const child_process_1 = __webpack_require__(129);
 const path_1 = __importDefault(__webpack_require__(622));
@@ -2634,7 +2634,7 @@ const runTerraform = (processCwd, componentPath, workspace, apply) => {
     }
     return true;
 };
-exports.runTerraform = runTerraform;
+exports.execTerraform = runTerraform;
 const setWorkspace = (workspace) => {
     if (workspace === undefined)
         return true;

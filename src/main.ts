@@ -1,7 +1,7 @@
 import * as core from '@actions/core'
 import { getGitModifiedDirectories } from './getGitModifiedDirectories'
 import { checkMainGitPath } from './checkMainGitPath'
-import {runTerraform} from "./runTerraform"
+import {execTerraform} from "./execTerraform"
 import path from 'path'
 
 interface Input {
@@ -18,7 +18,7 @@ export const main = (input: Input): void => {
         getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef)
             .then(r => {
                 r.map(componentPath => {
-                    runTerraform(processCwd, componentPath, input.workspace, input.apply)
+                    execTerraform(processCwd, componentPath, input.workspace, input.apply)
                 })
             })
     }).catch(e => {

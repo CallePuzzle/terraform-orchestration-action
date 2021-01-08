@@ -16,4 +16,4 @@ node_modules/
 .terraform*
 plan
 foo.bar
-terraform.tfstate*
+!__tests__/tf_project/000-first/foo.bar
