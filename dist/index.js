@@ -1752,16 +1752,39 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.main = void 0;
 const core = __importStar(__webpack_require__(470));
 const getGitModifiedDirectories_1 = __webpack_require__(794);
-const main = () => {
-    console.log(getGitModifiedDirectories_1.getGitModifiedDirectories('__tests__/tf_project/', '86e35d7e707289588dcf6f825be3e7c3e854cf58', '009ec5a0e9196b668d926916eaeb6f778694074f'));
+const checkMainGitPath_1 = __webpack_require__(541);
+const runTerraform_1 = __webpack_require__(325);
+const path_1 = __importDefault(__webpack_require__(622));
+const main = (input) => {
+    const processCwd = process.cwd();
+    checkMainGitPath_1.checkMainGitPath().then(() => {
+        getGitModifiedDirectories_1.getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef)
+            .then(r => {
+            r.map(componentPath => {
+                runTerraform_1.runTerraform(processCwd, componentPath, input.workspace, input.apply);
+            });
+        });
+    }).catch(e => {
+        core.error(e);
+        throw e;
+    });
 };
 exports.main = main;
 try {
-    exports.main();
+    exports.main({
+        workingDirectory: path_1.default.join('__tests__', 'tf_project', '/'),
+        baseRef: '86e35d7e707289588dcf6f825be3e7c3e854cf58',
+        headRef: '009ec5a0e9196b668d926916eaeb6f778694074f',
+        workspace: core.getInput('workspace'),
+        apply: core.getInput('apply') === "true"
+    });
 }
 catch (error) {
     core.setFailed(error);
@@ -2556,6 +2579,72 @@ class GitOutputStreams {
 }
 exports.GitOutputStreams = GitOutputStreams;
 //# sourceMappingURL=git-output-streams.js.map
+
+/***/ }),
+
+/***/ 325:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.setWorkspace = exports.runTerraform = void 0;
+const core = __importStar(__webpack_require__(470));
+const child_process_1 = __webpack_require__(129);
+const path_1 = __importDefault(__webpack_require__(622));
+const runTerraform = (processCwd, componentPath, workspace, apply) => {
+    process.chdir(path_1.default.join(processCwd, componentPath));
+    if (!exports.setWorkspace(workspace))
+        return false;
+    const options = [
+        ['validate'],
+        ['plan', '-out=plan'],
+    ];
+    if (apply)
+        options.push(['apply', 'plan']);
+    for (const option of options) {
+        const run = child_process_1.spawnSync('terraform', option);
+        core.info(run.output[1]);
+        core.info(run.output[2]);
+        if (run.status !== 0) {
+            return false;
+        }
+    }
+    return true;
+};
+exports.runTerraform = runTerraform;
+const setWorkspace = (workspace) => {
+    if (workspace === undefined)
+        return true;
+    const run = child_process_1.spawnSync('terraform', ['workspace', 'select', workspace]);
+    core.info(run.output[1]);
+    core.info(run.output[2]);
+    return run.status === 0;
+};
+exports.setWorkspace = setWorkspace;
+
 
 /***/ }),
 
@@ -4588,6 +4677,67 @@ exports.trailingFunctionArgument = trailingFunctionArgument;
 
 /***/ }),
 
+/***/ 541:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.checkMainGitPath = void 0;
+const core = __importStar(__webpack_require__(470));
+const simple_git_1 = __importDefault(__webpack_require__(964));
+const fs = __importStar(__webpack_require__(747));
+const checkMainGitPath = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const git = simple_git_1.default();
+        return yield git.log().then(() => {
+            return fs.statSync('.git').isDirectory();
+        }).catch(e => {
+            core.error(e);
+            throw e;
+        });
+    }
+    catch (e) {
+        core.error(e);
+        throw e;
+    }
+});
+exports.checkMainGitPath = checkMainGitPath;
+
+
+/***/ }),
+
 /***/ 544:
 /***/ (function(__unusedmodule, exports, __webpack_require__) {
 
@@ -5596,6 +5746,25 @@ function isNotRepoMessage(message) {
 
 "use strict";
 
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5610,35 +5779,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGitModifiedDirectories = void 0;
+const core = __importStar(__webpack_require__(470));
 const simple_git_1 = __importDefault(__webpack_require__(964));
-const path = __webpack_require__(622);
-const getGitModifiedDirectories = (basepath, base_ref, head_ref) => {
-    return _getGitModifiedDirectories(basepath, base_ref, head_ref);
-};
-exports.getGitModifiedDirectories = getGitModifiedDirectories;
-const _getGitModifiedDirectories = (basepath, base_ref, head_ref) => __awaiter(void 0, void 0, void 0, function* () {
+const path_1 = __importDefault(__webpack_require__(622));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getGitModifiedDirectories = (basepath, base_ref, head_ref) => __awaiter(void 0, void 0, void 0, function* () {
     const re = new RegExp('^' + basepath);
     const options = {
         baseDir: basepath,
         binary: 'git',
-        maxConcurrentProcesses: 1,
+        maxConcurrentProcesses: 1
     };
     try {
         const git = simple_git_1.default(options);
-        const affectedFiles = yield git.diff(['--name-only', base_ref, head_ref]);
-        return affectedFiles.split('\n').map(file => {
-            if (file.match(re)) {
-                return path.dirname(file).replace(re, '');
-            }
-        }).filter(file => {
-            return file !== undefined;
+        return yield git.diff(['--name-only', base_ref, head_ref])
+            .then(r => {
+            return r.split('\n').map(file => {
+                if (file.match(re)) {
+                    return path_1.default.dirname(file);
+                }
+            }).filter((file, index, self) => {
+                // no undefined + unique();
+                return file !== undefined && self.indexOf(file) === index;
+            });
+        })
+            .catch(e => {
+            core.error(e);
+            return [];
         });
     }
     catch (e) {
-        console.log(e);
-        return null;
+        core.error(e);
+        return [];
     }
 });
+exports.getGitModifiedDirectories = getGitModifiedDirectories;
 
 
 /***/ }),
