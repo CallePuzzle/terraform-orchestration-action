@@ -1,0 +1,24 @@
+name: Test
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-node@v1
+        with:
+          node-version: '11.x'
+      - uses: actions/cache@v1
+        with:
+          path: node_modules
+          key: ${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ hashFiles('**/yarn.lock') }}
+      - run: npm install
+      - run: npm run test
+      - run: npm run build
