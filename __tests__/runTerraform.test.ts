@@ -1,5 +1,5 @@
 import { execTerraform } from '../src/execTerraform'
-//jest.mock('@actions/core')
+jest.mock('@actions/core')
 
 const processCwd = process.cwd()
 
