@@ -21,6 +21,7 @@ export const main = (input: Input, log: LogInterface): void => {
     log.info(`Working directory: ${input.workingDirectory}`)
     log.info(`Base ref: ${input.baseRef}`)
     log.info(`Head ref: ${input.headRef}`)
+    log.info(`Exclude directories: ${input.excludeDirectories}`)
     log.info(`Workspace: ${input.workspace}`)
     log.info(`Apply: ${input.apply}`)
     const processCwd = process.cwd()
