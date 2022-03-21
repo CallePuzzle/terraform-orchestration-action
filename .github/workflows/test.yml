@@ -33,3 +33,11 @@ jobs:
       - run: yarn install --frozen-lockfile
       - run: yarn test
       - run: yarn build
+
+      - name: action test
+        uses: ./
+        with:
+          workingDirectory: __tests__/tf_project/
+          excludeDirectories: __tests__/tf_project/010-second/
+          baseRef: ${{ github.event.pull_request.base.sha }}
+          headRef: ${{ github.event.pull_request.head.sha }}
