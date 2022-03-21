@@ -40,7 +40,7 @@ module.exports =
 /******/ 	// the startup function
 /******/ 	function startup() {
 /******/ 		// Load entry module and return exports
-/******/ 		return __webpack_require__(131);
+/******/ 		return __webpack_require__(960);
 /******/ 	};
 /******/
 /******/ 	// run startup
@@ -1733,62 +1733,32 @@ module.exports = require("child_process");
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.main = void 0;
-const core = __importStar(__webpack_require__(470));
 const getGitModifiedDirectories_1 = __webpack_require__(794);
 const checkMainGitPath_1 = __webpack_require__(541);
 const execTerraform_1 = __webpack_require__(610);
-const path_1 = __importDefault(__webpack_require__(622));
-const main = (input) => {
+const main = (input, log) => {
+    log.info('Running...');
+    log.info(`Working directory: ${input.workingDirectory}`);
+    log.info(`Base ref: ${input.baseRef}`);
+    log.info(`Head ref: ${input.headRef}`);
+    log.info(`Workspace: ${input.workspace}`);
+    log.info(`Apply: ${input.apply}`);
     const processCwd = process.cwd();
-    checkMainGitPath_1.checkMainGitPath().then(() => {
-        getGitModifiedDirectories_1.getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef)
+    checkMainGitPath_1.checkMainGitPath(log).then(() => {
+        getGitModifiedDirectories_1.getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, log)
             .then(r => {
             r.map(componentPath => {
-                execTerraform_1.execTerraform(processCwd, componentPath, input.workspace, input.apply);
+                execTerraform_1.execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
             });
         });
     }).catch(e => {
-        core.error(e);
+        log.error(e.message);
         throw e;
     });
 };
 exports.main = main;
-try {
-    exports.main({
-        workingDirectory: path_1.default.join('__tests__', 'tf_project', '/'),
-        baseRef: '86e35d7e707289588dcf6f825be3e7c3e854cf58',
-        headRef: '009ec5a0e9196b668d926916eaeb6f778694074f',
-        workspace: core.getInput('workspace'),
-        apply: core.getInput('apply') === "true"
-    });
-}
-catch (error) {
-    core.setFailed(error);
-}
 
 
 /***/ }),
@@ -4649,21 +4619,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkMainGitPath = void 0;
-const core = __importStar(__webpack_require__(470));
 const simple_git_1 = __importDefault(__webpack_require__(964));
 const fs = __importStar(__webpack_require__(747));
-const checkMainGitPath = () => __awaiter(void 0, void 0, void 0, function* () {
+const checkMainGitPath = (log) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const git = simple_git_1.default();
         return yield git.log().then(() => {
-            return fs.statSync('.git').isDirectory();
+            if (fs.statSync('.git').isDirectory()) {
+                log.info('Git path is correct');
+                return true;
+            }
+            else {
+                log.error('Git path is incorrect');
+                return false;
+            }
         }).catch(e => {
-            core.error(e);
+            log.error(e.message);
             throw e;
         });
     }
     catch (e) {
-        core.error(e);
+        log.error(e.message);
         throw e;
     }
 });
@@ -4823,64 +4799,50 @@ exports.updateSubModuleTask = updateSubModuleTask;
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.execTerraform = void 0;
-const core = __importStar(__webpack_require__(470));
 const child_process_1 = __webpack_require__(129);
 const path_1 = __importDefault(__webpack_require__(622));
-const execTerraform = (processCwd, componentPath, workspace, apply) => {
+const execTerraform = (processCwd, componentPath, workspace, apply, log) => {
     process.chdir(path_1.default.join(processCwd, componentPath));
-    if (!spawnSyncTerraform(['init'])) {
-        core.error('init failed in: ' + componentPath);
+    log.info('terraform init');
+    if (!spawnSyncTerraform(['init'], log)) {
+        log.error('init failed in: ' + componentPath);
         return false;
     }
-    if (workspace !== undefined)
-        if (!spawnSyncTerraform(['workspace', 'select', workspace])) {
-            core.error('workspace ' + workspace + ' failed in: ' + componentPath);
+    if (workspace !== undefined) {
+        log.info('terraform workspace select ' + workspace);
+        if (!spawnSyncTerraform(['workspace', 'select', workspace], log)) {
+            log.error('workspace ' + workspace + ' failed in: ' + componentPath);
             return false;
         }
-    if (!spawnSyncTerraform(['validate'])) {
-        core.error('validate failed in: ' + componentPath);
+    }
+    log.info('terraform validate');
+    if (!spawnSyncTerraform(['validate'], log)) {
+        log.error('validate failed in: ' + componentPath);
         return false;
     }
-    if (!spawnSyncTerraform(['plan', '-out=plan'])) {
-        core.error('plan failed in: ' + componentPath);
+    log.info('terraform plan');
+    if (!spawnSyncTerraform(['plan', '-out=plan'], log)) {
+        log.error('plan failed in: ' + componentPath);
         return false;
     }
     if (apply)
-        if (!spawnSyncTerraform(['apply', 'plan'])) {
-            core.error('apply failed in: ' + componentPath);
-            return false;
-        }
+        log.info('terraform apply');
+    if (!spawnSyncTerraform(['apply', 'plan'], log)) {
+        log.error('apply failed in: ' + componentPath);
+        return false;
+    }
     return true;
 };
 exports.execTerraform = execTerraform;
-const spawnSyncTerraform = (options) => {
+const spawnSyncTerraform = (options, log) => {
     const run = child_process_1.spawnSync('terraform', options);
-    core.info(run.output[1]);
-    core.info(run.output[2]);
+    log.info(run.output[1].toString());
+    log.info(run.output[2].toString());
     if (run.status !== 0) {
         return false;
     }
@@ -5752,25 +5714,6 @@ function isNotRepoMessage(message) {
 
 "use strict";
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -5785,11 +5728,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getGitModifiedDirectories = void 0;
-const core = __importStar(__webpack_require__(470));
 const simple_git_1 = __importDefault(__webpack_require__(964));
 const path_1 = __importDefault(__webpack_require__(622));
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getGitModifiedDirectories = (basepath, base_ref, head_ref) => __awaiter(void 0, void 0, void 0, function* () {
+const getGitModifiedDirectories = (basepath, base_ref, head_ref, log) => __awaiter(void 0, void 0, void 0, function* () {
     const re = new RegExp('^' + basepath);
     const options = {
         baseDir: basepath,
@@ -5800,7 +5742,7 @@ const getGitModifiedDirectories = (basepath, base_ref, head_ref) => __awaiter(vo
         const git = simple_git_1.default(options);
         return yield git.diff(['--name-only', base_ref, head_ref])
             .then(r => {
-            return r.split('\n').map(file => {
+            const ret = r.split('\n').map(file => {
                 if (file.match(re)) {
                     return path_1.default.dirname(file);
                 }
@@ -5808,14 +5750,16 @@ const getGitModifiedDirectories = (basepath, base_ref, head_ref) => __awaiter(vo
                 // no undefined + unique();
                 return file !== undefined && self.indexOf(file) === index;
             });
+            log.info('Modified directories: ' + JSON.stringify(ret));
+            return ret;
         })
             .catch(e => {
-            core.error(e);
+            log.error(e);
             return [];
         });
     }
     catch (e) {
-        core.error(e);
+        log.error(e.message);
         return [];
     }
 });
@@ -6333,6 +6277,53 @@ class TasksPendingQueue {
 exports.TasksPendingQueue = TasksPendingQueue;
 TasksPendingQueue.counter = 0;
 //# sourceMappingURL=tasks-pending-queue.js.map
+
+/***/ }),
+
+/***/ 960:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const core = __importStar(__webpack_require__(470));
+const main_1 = __webpack_require__(131);
+class Log {
+    info(message) { core.info(message); }
+    error(message) { core.error(message); }
+}
+try {
+    main_1.main({
+        workingDirectory: core.getInput('workingDirectory'),
+        baseRef: core.getInput('baseRef'),
+        headRef: core.getInput('headRef'),
+        workspace: core.getInput('workspace') || undefined,
+        apply: core.getInput('apply') === "true"
+    }, new Log());
+}
+catch (error) {
+    core.setFailed(error);
+}
+
 
 /***/ }),
 
