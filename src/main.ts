@@ -6,7 +6,7 @@ interface Input {
     workingDirectory: string
     baseRef: string
     headRef: string
-    excludeDirectories: string | undefined
+    excludeDirectories: string[]
     workspace: string | undefined
     apply: boolean
 }
