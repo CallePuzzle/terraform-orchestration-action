@@ -1760,7 +1760,7 @@ exports.main = void 0;
 const core = __importStar(__webpack_require__(470));
 const getGitModifiedDirectories_1 = __webpack_require__(794);
 const checkMainGitPath_1 = __webpack_require__(541);
-const runTerraform_1 = __webpack_require__(325);
+const execTerraform_1 = __webpack_require__(610);
 const path_1 = __importDefault(__webpack_require__(622));
 const main = (input) => {
     const processCwd = process.cwd();
@@ -1768,7 +1768,7 @@ const main = (input) => {
         getGitModifiedDirectories_1.getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef)
             .then(r => {
             r.map(componentPath => {
-                runTerraform_1.runTerraform(processCwd, componentPath, input.workspace, input.apply);
+                execTerraform_1.execTerraform(processCwd, componentPath, input.workspace, input.apply);
             });
         });
     }).catch(e => {
@@ -2579,72 +2579,6 @@ class GitOutputStreams {
 }
 exports.GitOutputStreams = GitOutputStreams;
 //# sourceMappingURL=git-output-streams.js.map
-
-/***/ }),
-
-/***/ 325:
-/***/ (function(__unusedmodule, exports, __webpack_require__) {
-
-"use strict";
-
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setWorkspace = exports.execTerraform = void 0;
-const core = __importStar(__webpack_require__(470));
-const child_process_1 = __webpack_require__(129);
-const path_1 = __importDefault(__webpack_require__(622));
-const runTerraform = (processCwd, componentPath, workspace, apply) => {
-    process.chdir(path_1.default.join(processCwd, componentPath));
-    if (!exports.setWorkspace(workspace))
-        return false;
-    const options = [
-        ['validate'],
-        ['plan', '-out=plan'],
-    ];
-    if (apply)
-        options.push(['apply', 'plan']);
-    for (const option of options) {
-        const run = child_process_1.spawnSync('terraform', option);
-        core.info(run.output[1]);
-        core.info(run.output[2]);
-        if (run.status !== 0) {
-            return false;
-        }
-    }
-    return true;
-};
-exports.execTerraform = runTerraform;
-const setWorkspace = (workspace) => {
-    if (workspace === undefined)
-        return true;
-    const run = child_process_1.spawnSync('terraform', ['workspace', 'select', workspace]);
-    core.info(run.output[1]);
-    core.info(run.output[2]);
-    return run.status === 0;
-};
-exports.setWorkspace = setWorkspace;
-
 
 /***/ }),
 
@@ -4881,6 +4815,78 @@ function updateSubModuleTask(customArgs) {
 }
 exports.updateSubModuleTask = updateSubModuleTask;
 //# sourceMappingURL=sub-module.js.map
+
+/***/ }),
+
+/***/ 610:
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
+
+"use strict";
+
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.execTerraform = void 0;
+const core = __importStar(__webpack_require__(470));
+const child_process_1 = __webpack_require__(129);
+const path_1 = __importDefault(__webpack_require__(622));
+const execTerraform = (processCwd, componentPath, workspace, apply) => {
+    process.chdir(path_1.default.join(processCwd, componentPath));
+    if (!spawnSyncTerraform(['init'])) {
+        core.error('init failed in: ' + componentPath);
+        return false;
+    }
+    if (workspace !== undefined)
+        if (!spawnSyncTerraform(['workspace', 'select', workspace])) {
+            core.error('workspace ' + workspace + ' failed in: ' + componentPath);
+            return false;
+        }
+    if (!spawnSyncTerraform(['validate'])) {
+        core.error('validate failed in: ' + componentPath);
+        return false;
+    }
+    if (!spawnSyncTerraform(['plan', '-out=plan'])) {
+        core.error('plan failed in: ' + componentPath);
+        return false;
+    }
+    if (apply)
+        if (!spawnSyncTerraform(['apply', 'plan'])) {
+            core.error('apply failed in: ' + componentPath);
+            return false;
+        }
+    return true;
+};
+exports.execTerraform = execTerraform;
+const spawnSyncTerraform = (options) => {
+    const run = child_process_1.spawnSync('terraform', options);
+    core.info(run.output[1]);
+    core.info(run.output[2]);
+    if (run.status !== 0) {
+        return false;
+    }
+    return true;
+};
+
 
 /***/ }),
 

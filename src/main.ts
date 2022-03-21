@@ -1,8 +1,6 @@
-import * as core from '@actions/core'
 import { getGitModifiedDirectories } from './getGitModifiedDirectories'
 import { checkMainGitPath } from './checkMainGitPath'
 import {execTerraform} from "./execTerraform"
-import path from 'path'
 
 interface Input {
     workingDirectory: string
@@ -12,29 +10,28 @@ interface Input {
     apply: boolean
 }
 
-export const main = (input: Input): void => {
+export interface LogInterface {
+    info: (message: string) => void
+    error: (message: string) => void
+}
+
+export const main = (input: Input, log: LogInterface): void => {
+    log.info('Running...')
+    log.info(`Working directory: ${input.workingDirectory}`)
+    log.info(`Base ref: ${input.baseRef}`)
+    log.info(`Head ref: ${input.headRef}`)
+    log.info(`Workspace: ${input.workspace}`)
+    log.info(`Apply: ${input.apply}`)
     const processCwd = process.cwd()
-    checkMainGitPath().then(() => {
-        getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef)
+    checkMainGitPath(log).then(() => {
+        getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, log)
             .then(r => {
                 r.map(componentPath => {
-                    execTerraform(processCwd, componentPath, input.workspace, input.apply)
+                    execTerraform(processCwd, componentPath, input.workspace, input.apply, log)
                 })
             })
     }).catch(e => {
-        core.error(e)
+        log.error(e.message)
         throw e
     })
-}
-
-try {
-    main({
-        workingDirectory: path.join('__tests__', 'tf_project', '/'), //core.getInput('workingDirectory'),
-        baseRef: '86e35d7e707289588dcf6f825be3e7c3e854cf58', //core.getInput('baseRef'),
-        headRef: '009ec5a0e9196b668d926916eaeb6f778694074f', //core.getInput('headRef')
-        workspace: core.getInput('workspace'),
-        apply: core.getInput('apply') === "true"
-    })
-} catch (error) {
-    core.setFailed(error)
 }
