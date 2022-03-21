@@ -1,0 +1,25 @@
+name: 'Terraform Orchestration Action'
+description: ''
+inputs:
+  workingDirectory:
+    description: ''
+    required: false
+    default: '.'
+  baseRef:
+    description: ''
+    required: true
+  headRef:
+    description: ''
+    required: true
+  workspace:
+    description: ''
+    required: true
+  apply:
+    description: ''
+    required: false
+runs:
+  using: 'node15'
+  main: 'dist/index.js'
+branding:
+  icon: 'lock'
+  color: 'gray-dark'
