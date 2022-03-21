@@ -29,7 +29,7 @@ export const getGitModifiedDirectories = async (basepath: string, base_ref: stri
                 log.error(e)
                 return []
             })
-    } catch (e) {
+    } catch (e:any) {
         log.error(e.message)
         return []
     }

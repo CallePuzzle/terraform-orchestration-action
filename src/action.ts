@@ -15,6 +15,6 @@ try {
         workspace: core.getInput('workspace') || undefined,
         apply: core.getInput('apply') === "true"
     }, new Log())
-} catch (error) {
+} catch (error:any) {
     core.setFailed(error)
 }

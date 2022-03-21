@@ -17,7 +17,7 @@ export const checkMainGitPath = async (log: LogInterface): Promise<boolean> => {
             log.error(e.message)
             throw e
         })
-    } catch (e) {
+    } catch (e:any) {
         log.error(e.message)
         throw e
     }
