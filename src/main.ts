@@ -6,6 +6,7 @@ interface Input {
     workingDirectory: string
     baseRef: string
     headRef: string
+    excludeDirectories: string | undefined
     workspace: string | undefined
     apply: boolean
 }
@@ -24,7 +25,7 @@ export const main = (input: Input, log: LogInterface): void => {
     log.info(`Apply: ${input.apply}`)
     const processCwd = process.cwd()
     checkMainGitPath(log).then(() => {
-        getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, log)
+        getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, input.excludeDirectories, log)
             .then(r => {
                 r.map(componentPath => {
                     execTerraform(processCwd, componentPath, input.workspace, input.apply, log)

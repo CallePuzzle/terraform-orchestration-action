@@ -11,6 +11,9 @@ inputs:
   headRef:
     description: ''
     required: true
+  excludeDirectories:
+    description: ''
+    required: false
   workspace:
     description: ''
     required: true
