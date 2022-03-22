@@ -1,5 +1,5 @@
 name: 'Terraform Orchestration Action'
-description: 'This action is used to orchestrate Terraform modules. It searches for a Terraform module in the current directory which has been modified and runs Terraform inside the module.'
+description: 'This action is used to orchestrate Terraform modules which has been changed.'
 inputs:
   workingDirectory:
     description: 'Working directory to run Terraform in.'
