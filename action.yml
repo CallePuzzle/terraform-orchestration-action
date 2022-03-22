@@ -1,24 +1,24 @@
 name: 'Terraform Orchestration Action'
-description: ''
+description: 'This action is used to orchestrate Terraform modules. It searches for a Terraform module in the current directory which has been modified and runs Terraform inside the module.'
 inputs:
   workingDirectory:
-    description: ''
+    description: 'Working directory to run Terraform in.'
     required: false
     default: '.'
   baseRef:
-    description: ''
+    description: 'Git reference to use as the base'
     required: true
   headRef:
-    description: ''
+    description: 'Git reference to use as the head'
     required: true
   excludeDirectories:
-    description: ''
+    description: 'List of directories separated by commas to exclude from the search'
     required: false
   workspace:
-    description: ''
+    description: 'Workspace to use for Terraform'
     required: true
   apply:
-    description: ''
+    description: 'Boonlean variable to determine if the action should apply the changes'
     required: false
 runs:
   using: 'node16'
