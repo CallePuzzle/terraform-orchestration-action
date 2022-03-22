@@ -1743,11 +1743,12 @@ const main = (input, log) => {
     log.info(`Working directory: ${input.workingDirectory}`);
     log.info(`Base ref: ${input.baseRef}`);
     log.info(`Head ref: ${input.headRef}`);
+    log.info(`Exclude directories: ${input.excludeDirectories}`);
     log.info(`Workspace: ${input.workspace}`);
     log.info(`Apply: ${input.apply}`);
     const processCwd = process.cwd();
     checkMainGitPath_1.checkMainGitPath(log).then(() => {
-        getGitModifiedDirectories_1.getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, log)
+        getGitModifiedDirectories_1.getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, input.excludeDirectories, log)
             .then(r => {
             r.map(componentPath => {
                 execTerraform_1.execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
@@ -5731,8 +5732,8 @@ exports.getGitModifiedDirectories = void 0;
 const simple_git_1 = __importDefault(__webpack_require__(964));
 const path_1 = __importDefault(__webpack_require__(622));
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getGitModifiedDirectories = (basepath, base_ref, head_ref, log) => __awaiter(void 0, void 0, void 0, function* () {
-    const re = new RegExp('^' + basepath);
+const getGitModifiedDirectories = (basepath, base_ref, head_ref, exclude_directories, log) => __awaiter(void 0, void 0, void 0, function* () {
+    const re_include = new RegExp('^' + basepath);
     const options = {
         baseDir: basepath,
         binary: 'git',
@@ -5743,8 +5744,15 @@ const getGitModifiedDirectories = (basepath, base_ref, head_ref, log) => __await
         return yield git.diff(['--name-only', base_ref, head_ref])
             .then(r => {
             const ret = r.split('\n').map(file => {
-                if (file.match(re)) {
-                    return path_1.default.dirname(file);
+                if (file.match(re_include)) {
+                    let ret = path_1.default.dirname(file);
+                    for (const exclude_directory of exclude_directories) {
+                        let re_exclude = new RegExp('^' + exclude_directory);
+                        if (ret.match(re_exclude)) {
+                            return undefined;
+                        }
+                    }
+                    return ret;
                 }
             }).filter((file, index, self) => {
                 // no undefined + unique();
@@ -6317,6 +6325,7 @@ try {
         baseRef: core.getInput('baseRef'),
         headRef: core.getInput('headRef'),
         workspace: core.getInput('workspace') || undefined,
+        excludeDirectories: core.getInput('excludeDirectories').split(','),
         apply: core.getInput('apply') === "true"
     }, new Log());
 }
