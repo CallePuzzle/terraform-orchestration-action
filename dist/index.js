@@ -5747,6 +5747,9 @@ const getGitModifiedDirectories = (basepath, base_ref, head_ref, exclude_directo
                 if (file.match(re_include)) {
                     let ret = path_1.default.dirname(file);
                     for (const exclude_directory of exclude_directories) {
+                        if (exclude_directory === 'root_path' && ret === '.') {
+                            return undefined;
+                        }
                         let re_exclude = new RegExp('^' + exclude_directory);
                         if (ret.match(re_exclude)) {
                             return undefined;
