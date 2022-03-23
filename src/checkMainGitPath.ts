@@ -7,7 +7,6 @@ export const checkMainGitPath = async (log: LogInterface): Promise<boolean> => {
         const git: SimpleGit = simpleGit()
         return await git.log().then(() => {
             if (fs.statSync('.git').isDirectory()) {
-                log.info('Git path is correct')
                 return true
             } else {
                 log.error('Git path is incorrect')

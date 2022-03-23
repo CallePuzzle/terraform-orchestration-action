@@ -14,6 +14,7 @@ try {
         headRef: core.getInput('headRef'),
         workspace: core.getInput('workspace') || undefined,
         excludeDirectories: core.getInput('excludeDirectories').split(','),
+        commonModules: core.getInput('commonModules').split(','),
         apply: core.getInput('apply') === "true"
     }, new Log())
 } catch (error:any) {
