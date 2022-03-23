@@ -23037,25 +23037,27 @@ const getDirectories = (source) => fs.readdirSync(source, { withFileTypes: true 
     .map((dirent) => path_1.default.join(source, dirent.name));
 exports.getDirectories = getDirectories;
 const getDirectoriesToRun = (paths, workingDirectory, commonModules, excludeDirectories, log) => {
-    const ret = paths.map(componentPath => {
+    let ret = Array();
+    for (const path of paths) {
         const isCommonModule = commonModules.filter(commonModule => {
             const re = new RegExp('^' + commonModule);
-            return componentPath.match(re);
+            return path.match(re);
         });
         if (isCommonModule) {
             log.info('Common modules has been modified, searching for all componentes...');
             const allComponents = lodash_1.difference(exports.getDirectories(workingDirectory), commonModules, excludeDirectories);
-            log.info(`Components: ${allComponents}`);
             for (const component of allComponents) {
-                return component;
+                ret.push(component);
             }
+            break;
         }
         else {
-            return componentPath;
+            ret.push(path);
         }
-    });
-    // Remove .git
-    return lodash_1.difference(lodash_1.uniq(lodash_1.compact(ret)), ['.git']);
+    }
+    ret = lodash_1.difference(lodash_1.uniq(lodash_1.compact(ret)), ['.git']);
+    log.info(`Components: ${ret}`);
+    return ret;
 };
 exports.getDirectoriesToRun = getDirectoriesToRun;
 

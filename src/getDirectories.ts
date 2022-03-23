@@ -9,22 +9,25 @@ export const getDirectories = (source: string): Array<string> =>
         .map((dirent: fs.Dirent) => path.join(source, dirent.name))
 
 export const getDirectoriesToRun = (paths: Array<string>, workingDirectory: string, commonModules: Array<string>, excludeDirectories: Array<string>, log: LogInterface): Array<any> => {
-    const ret = paths.map(componentPath => {
+    let ret = Array<string>()
+    for (const path of paths) {
         const isCommonModule = commonModules.filter(commonModule => {
             const re = new RegExp('^' + commonModule)
-            return componentPath.match(re)
+            return path.match(re)
         })
         if (isCommonModule) {
             log.info('Common modules has been modified, searching for all componentes...')
             const allComponents = difference(getDirectories(workingDirectory), commonModules, excludeDirectories)
-            log.info(`Components: ${allComponents}`)
+            
             for (const component of allComponents) {
-                return component
+                ret.push(component)
             }
+        break
         } else {
-            return componentPath
+            ret.push(path)
         }
-        })
-    // Remove .git
-    return difference(uniq(compact(ret)), ['.git'])
+    }
+    ret = difference(uniq(compact(ret)), ['.git'])
+    log.info(`Components: ${ret}`)
+    return ret
 }

@@ -27,4 +27,6 @@ test('get directories to run', () => {
         .toEqual(['__tests__/tf_project/000-first'])
     expect(getDirectoriesToRun(['__tests__/tf_project/common-module/submodule'], '__tests__/tf_project/', ['__tests__/tf_project/common-module'], ['__tests__/tf_project/010-second'], new Log))
         .toEqual(['__tests__/tf_project/000-first'])
+    expect(getDirectoriesToRun(['__tests__/tf_project/common-module/submodule', '__tests__/tf_project/010-second'], '__tests__/tf_project/', ['__tests__/tf_project/common-module'], [], new Log))
+        .toEqual(['__tests__/tf_project/000-first', '__tests__/tf_project/010-second'])
 })
