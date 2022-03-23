@@ -3,7 +3,7 @@ import path from 'path'
 import { LogInterface } from './main'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const getGitModifiedDirectories = async (basepath: string, base_ref: string, head_ref: string, exclude_directories: string[], log: LogInterface): Promise<Array<any>> => {
+export const getGitModifiedDirectories = async (basepath: string, base_ref: string, head_ref: string, exclude_directories: Array<string>, log: LogInterface): Promise<Array<any>> => {
     const re_include = new RegExp('^' + basepath)
     const options: SimpleGitOptions = {
         baseDir: basepath,

@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@actions/core": "^1.2.6",
+    "@types/lodash": "^4.14.180",
     "fs": "^0.0.1-security",
+    "lodash": "^4.17.21",
     "path": "^0.12.7",
     "readline-sync": "^1.4.10",
     "simple-git": "^2.31.0"

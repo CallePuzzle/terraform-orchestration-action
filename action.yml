@@ -14,6 +14,9 @@ inputs:
   excludeDirectories:
     description: 'List of directories separated by commas to exclude from the search'
     required: false
+  commonModules:
+    description: 'List of common modules, if you change some common modules, all components will be updated'
+    required: false
   workspace:
     description: 'Workspace to use for Terraform'
     required: true
