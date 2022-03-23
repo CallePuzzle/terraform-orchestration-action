@@ -25,5 +25,6 @@ export const getDirectoriesToRun = (paths: Array<string>, workingDirectory: stri
             return componentPath
         }
         })
-    return uniq(compact(ret))
+    // Remove .git
+    return difference(uniq(compact(ret)), ['.git'])
 }

@@ -31,7 +31,6 @@ export const main = (input: Input, log: LogInterface): void => {
     checkMainGitPath(log).then(() => {
         getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, input.excludeDirectories, log)
             .then(components => {
-                console.log(components, input.workingDirectory, input.commonModules, input.excludeDirectories)
                 const componentsToRun = getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log)
                 componentsToRun.map(componentPath => {
                     execTerraform(processCwd, componentPath, input.workspace, input.apply, log)

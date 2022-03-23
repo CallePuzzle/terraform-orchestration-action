@@ -1754,7 +1754,6 @@ const main = (input, log) => {
     checkMainGitPath_1.checkMainGitPath(log).then(() => {
         getGitModifiedDirectories_1.getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, input.excludeDirectories, log)
             .then(components => {
-            console.log(components, input.workingDirectory, input.commonModules, input.excludeDirectories);
             const componentsToRun = getDirectories_1.getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log);
             componentsToRun.map(componentPath => {
                 execTerraform_1.execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
@@ -23055,7 +23054,8 @@ const getDirectoriesToRun = (paths, workingDirectory, commonModules, excludeDire
             return componentPath;
         }
     });
-    return lodash_1.uniq(lodash_1.compact(ret));
+    // Remove .git
+    return lodash_1.difference(lodash_1.uniq(lodash_1.compact(ret)), ['.git']);
 };
 exports.getDirectoriesToRun = getDirectoriesToRun;
 
