@@ -31,7 +31,7 @@ export const execTerraform = (processCwd: string, componentPath: string, workspa
         return false
     }
 
-    if (apply) {
+    if (apply === true) {
         log.info('terraform apply')
         if (!spawnSyncTerraform(['apply', 'plan'], log)) {
             log.error('apply failed in: ' + componentPath)
