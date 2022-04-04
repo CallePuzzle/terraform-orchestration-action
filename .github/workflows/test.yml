@@ -34,13 +34,22 @@ jobs:
       - run: yarn test
       - run: yarn build
 
-      - name: action test
+      - name: action test plan
         uses: ./
         with:
           workingDirectory: __tests__/tf_project/
           excludeDirectories: __tests__/tf_project/010-second
           baseRef: 86e35d7e707289588dcf6f825be3e7c3e854cf58
           headRef: 009ec5a0e9196b668d926916eaeb6f778694074f
+
+      - name: action test apply
+        uses: ./
+        with:
+          workingDirectory: __tests__/tf_project/
+          excludeDirectories: __tests__/tf_project/010-second
+          baseRef: 86e35d7e707289588dcf6f825be3e7c3e854cf58
+          headRef: 009ec5a0e9196b668d926916eaeb6f778694074f
+          apply: true
 
       - name: action test
         uses: ./

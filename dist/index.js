@@ -22052,11 +22052,12 @@ const execTerraform = (processCwd, componentPath, workspace, apply, log) => {
         log.error('plan failed in: ' + componentPath);
         return false;
     }
-    if (apply)
+    if (apply === true) {
         log.info('terraform apply');
-    if (!spawnSyncTerraform(['apply', 'plan'], log)) {
-        log.error('apply failed in: ' + componentPath);
-        return false;
+        if (!spawnSyncTerraform(['apply', 'plan'], log)) {
+            log.error('apply failed in: ' + componentPath);
+            return false;
+        }
     }
     return true;
 };
