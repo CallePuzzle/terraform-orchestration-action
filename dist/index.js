@@ -23040,11 +23040,11 @@ exports.getDirectories = getDirectories;
 const getDirectoriesToRun = (paths, workingDirectory, commonModules, excludeDirectories, log) => {
     let ret = Array();
     for (const path of paths) {
-        const isCommonModule = commonModules.filter(commonModule => {
+        const isCommonModule = !lodash_1.isEmpty(commonModules.filter(commonModule => {
             const re = new RegExp('^' + commonModule);
             return path.match(re);
-        });
-        if (isCommonModule) {
+        }));
+        if (isCommonModule === true) {
             log.info('Common modules has been modified, searching for all componentes...');
             const allComponents = lodash_1.difference(exports.getDirectories(workingDirectory), commonModules, excludeDirectories);
             for (const component of allComponents) {
