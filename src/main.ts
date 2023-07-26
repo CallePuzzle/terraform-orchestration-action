@@ -1,7 +1,8 @@
 import { getGitModifiedDirectories } from './getGitModifiedDirectories'
 import { getDirectoriesToRun } from './getDirectories'
 import { checkMainGitPath } from './checkMainGitPath'
-import {execTerraform} from "./execTerraform"
+import { execTerraform } from "./execTerraform"
+import { workspaceOperation } from './workspaceCreation'
 
 interface Input {
     workingDirectory: string
@@ -11,6 +12,8 @@ interface Input {
     commonModules: Array<string>
     workspace: string | undefined
     apply: boolean
+    tfeToken: string
+    organizationName: string
 }
 
 export interface LogInterface {
@@ -33,6 +36,9 @@ export const main = (input: Input, log: LogInterface): void => {
             .then(components => {
                 const componentsToRun = getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log)
                 componentsToRun.map(componentPath => {
+                    if (input.tfeToken && input.organizationName) { 
+                      workspaceOperation(componentPath, input.organizationName, input.tfeToken)
+                    }
                     execTerraform(processCwd, componentPath, input.workspace, input.apply, log)
                 })
             })
