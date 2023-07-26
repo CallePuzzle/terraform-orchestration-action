@@ -14,9 +14,6 @@ interface BodyInterface {
   data?: DataInterface; // The value may be nullable
 }
 
-// const authToken = '5dOcOVFRMnflxg.atlasv1.sfv5Ery3PxUW4frzmS0JSJOPDzozyOqVlhtLMx458YT3kCN7UBdQebzrtf3KJw33Q0M'
-
-
 // Generic function for interacting with the TFE API
 async function terraformApiCall(method: string, projectName: string, organizationName: string, authToken: string): Promise<boolean> {
   // Set
