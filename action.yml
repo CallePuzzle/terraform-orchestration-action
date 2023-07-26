@@ -23,10 +23,10 @@ inputs:
   apply:
     description: 'Boolean variable to determine if the action should apply the changes'
     required: false
-  tfe_token:
+  tfeToken:
     description: 'Terraform Enterprise Remote backend API token. Set it if you want to force local execution for your operations'
     required: false
-  organization_name:
+  organizationName:
     description: 'Name of the organization storing the Terraform workspaces in TFE remote'
     required: false
 runs:
