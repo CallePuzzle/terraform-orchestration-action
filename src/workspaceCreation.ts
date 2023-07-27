@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from 'axios'; 
+import axios, { AxiosResponse } from 'axios' 
+import { LogInterface } from './main'
 
 // Interface definition. This is needed for a well-formed request body.
 interface Attributes {
@@ -15,7 +16,7 @@ interface BodyInterface {
 }
 
 // Generic function for interacting with the TFE API
-async function terraformApiCall(method: string, projectName: string, organizationName: string, authToken: string): Promise<boolean> {
+async function terraformApiCall(method: string, projectName: string, organizationName: string, authToken: string, log: LogInterface): Promise<boolean> {
   // Set
   const baseUrl: string = `https://app.terraform.io/api/v2/organizations/${organizationName}/workspaces`
   var body: BodyInterface;
@@ -24,7 +25,6 @@ async function terraformApiCall(method: string, projectName: string, organizatio
 
   switch(method) {
     case 'get': {
-      // body = '';
       goodStatus = 200;
       apiUrl = baseUrl + `/${projectName}`;
       break;
@@ -64,25 +64,29 @@ async function terraformApiCall(method: string, projectName: string, organizatio
       return false;
     }
   } catch (error) {
-    console.error('There was an error when calling the API', error.response.data);
+    log.error('There was an error when calling the API', error.response.data);
     return false;
   }
 }
 
 // Logic execution
-export const workspaceOperation = (projectName: string, organizationName: string, authToken: string): void => {
-  terraformApiCall('get', projectName, organizationName, authToken).then((result) => {
-    if (result) {
-      console.log('The workspace exists. Nothing to do...');
-    } else {
-      console.log('The workspace does not exist. Creating...');
-      terraformApiCall('post', projectName, organizationName, authToken).then((result) => {
-        if (result) {
-          console.log('Workspace created.');
-        } else {
-          console.log('Something went wrong.');
-        }
-      })
-    }
-  })
+export const workspaceOperation = (projectName: string, organizationName: string, authToken: string, log: LogInterface): void => {
+  if (!authToken || !organizationName) {
+    log.info('Missing params. Skipping...');
+  } else {
+    terraformApiCall('get', projectName, organizationName, authToken, log).then((result) => {
+      if (result) {
+        log.info('The workspace exists. Nothing to do...');
+      } else {
+        log.info('The workspace does not exist. Creating...');
+        terraformApiCall('post', projectName, organizationName, authToken, log).then((result) => {
+          if (result) {
+            log.info('Workspace created.');
+          } else {
+            log.info('Something went wrong.');
+          }
+        })
+      }
+    })
+  }
 }

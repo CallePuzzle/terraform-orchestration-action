@@ -36,9 +36,8 @@ export const main = (input: Input, log: LogInterface): void => {
             .then(components => {
                 const componentsToRun = getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log)
                 componentsToRun.map(componentPath => {
-                    if (input.organizationName) { 
-                      workspaceOperation(componentPath, input.organizationName, input.tfeToken.trim())
-                    }
+                    log.info("Initializing remote workspace...")
+                    workspaceOperation(componentPath, input.organizationName, input.tfeToken, log)
                     execTerraform(processCwd, componentPath, input.workspace, input.apply, log)
                 })
             })
