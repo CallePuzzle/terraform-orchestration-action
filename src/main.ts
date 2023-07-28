@@ -39,7 +39,7 @@ export const main = (input: Input, log: LogInterface): void => {
             .then(components => {
                 const componentsToRun = getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log)
                 componentsToRun.map(componentPath => {
-                    execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
+                    execTerraform(processCwd, componentPath, input.workspace, input.apply, log, input.organizationName, input.tfeToken);
                 })
             })
     }).catch(e => {
