@@ -19,9 +19,9 @@ interface BodyInterface {
 async function terraformApiCall(method: string, projectName: string, organizationName: string, authToken: string, log: LogInterface): Promise<boolean> {
   // Set
   const baseUrl: string = `https://app.terraform.io/api/v2/organizations/${organizationName}/workspaces`
-  var body: BodyInterface;
-  var apiUrl: string;
-  var goodStatus: number;
+  let body!: BodyInterface;
+  let apiUrl!: string;
+  let goodStatus!: number;
 
   switch(method) {
     case 'get': {
@@ -64,9 +64,10 @@ async function terraformApiCall(method: string, projectName: string, organizatio
       return false;
     }
   } catch (error) {
-    log.error('There was an error when calling the API', error.response.data);
+    log.error(`There was an error when calling the API: ${error.response.data}`);
     return false;
   }
+  return false;
 }
 
 // Logic execution

@@ -2,7 +2,6 @@ import { getGitModifiedDirectories } from './getGitModifiedDirectories'
 import { getDirectoriesToRun } from './getDirectories'
 import { checkMainGitPath } from './checkMainGitPath'
 import { execTerraform } from "./execTerraform"
-import { workspaceOperation } from './workspaceCreation'
 
 interface Input {
     workingDirectory: string
@@ -30,14 +29,16 @@ export const main = (input: Input, log: LogInterface): void => {
     log.info(`Common modules: ${input.commonModules}`)
     log.info(`Workspace: ${input.workspace}`)
     log.info(`Apply: ${input.apply}`)
+    if (input.organizationName) {
+      log.info(`Terraform Enterprise Organization Name:: ${input.organizationName}`)
+    }
     const processCwd = process.cwd()
+    log.info(`${processCwd}`)
     checkMainGitPath(log).then(() => {
         getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, input.excludeDirectories, log)
             .then(components => {
                 const componentsToRun = getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log)
                 componentsToRun.map(componentPath => {
-                    log.info('Initializing remote workspace...');
-                    workspaceOperation(componentPath, input.organizationName, input.tfeToken, log);
                     execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
                 })
             })
