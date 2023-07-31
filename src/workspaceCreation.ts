@@ -71,10 +71,11 @@ async function terraformApiCall(method: string, projectName: string, organizatio
 }
 
 // Logic execution
-export const workspaceOperation = (projectName: string, organizationName: string, authToken: string, log: LogInterface): void => {
-  if (!authToken || !organizationName) {
+export const workspaceOperation = (projectName: string, organizationName: string | undefined, authToken: string | undefined, log: LogInterface): void => {
+  if (authToken === undefined || organizationName === undefined) {
     log.info('Missing params. Skipping...');
   } else {
+    log.info('Checking if workspace exists in TFE...')
     terraformApiCall('get', projectName, organizationName, authToken, log).then((result) => {
       if (result) {
         log.info('The workspace exists. Nothing to do...');

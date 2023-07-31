@@ -1,15 +1,10 @@
 import { spawnSync } from 'child_process'
 import path from 'path'
 import { LogInterface } from './main'
-import { workspaceOperation } from './workspaceCreation'
 
-export const execTerraform = (processCwd: string, componentPath: string, workspace: string | undefined, apply: boolean, log: LogInterface, organizationName?: string, tfeToken?: string): boolean => {
+export const execTerraform = (processCwd: string, componentPath: string, workspace: string | undefined, apply: boolean, log: LogInterface): boolean => {
     process.chdir(path.join(processCwd, componentPath));
-    
-    if (organizationName && tfeToken) {
-      log.info('workspace creation')
-      workspaceOperation(componentPath, organizationName, tfeToken, log)
-    }
+
     log.info('terraform init')
     if (!spawnSyncTerraform(['init'], log)) {
         log.error('init failed in: ' + componentPath)
