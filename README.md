@@ -28,6 +28,12 @@ jobs:
           headRef: ${{ github.event.pull_request.head.sha }}
 ```
 
+## Build the action
+
+```sh
+yarn build
+```
+
 ## Script mode
 
 ```sh
