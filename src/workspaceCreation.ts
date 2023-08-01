@@ -76,12 +76,12 @@ export const workspaceOperation = async (projectName: string, organizationName: 
     log.info('Missing params. Skipping...');
   } else {
     log.info('Checking if workspace exists in TFE...')
-    await terraformApiCall('get', projectName, organizationName, authToken, log).then((result) => {
+    await terraformApiCall('get', projectName, organizationName, authToken, log).then( async (result) => {
       if (result) {
         log.info('The workspace exists. Nothing to do...');
       } else {
         log.info('The workspace does not exist. Creating...');
-        terraformApiCall('post', projectName, organizationName, authToken, log).then((result) => {
+        await terraformApiCall('post', projectName, organizationName, authToken, log).then((result) => {
           if (result) {
             log.info('Workspace created.');
           } else {

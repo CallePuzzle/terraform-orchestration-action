@@ -2861,13 +2861,13 @@ const workspaceOperation = (projectName, organizationName, authToken, log) => __
     }
     else {
         log.info('Checking if workspace exists in TFE...');
-        yield terraformApiCall('get', projectName, organizationName, authToken, log).then((result) => {
+        yield terraformApiCall('get', projectName, organizationName, authToken, log).then((result) => __awaiter(void 0, void 0, void 0, function* () {
             if (result) {
                 log.info('The workspace exists. Nothing to do...');
             }
             else {
                 log.info('The workspace does not exist. Creating...');
-                terraformApiCall('post', projectName, organizationName, authToken, log).then((result) => {
+                yield terraformApiCall('post', projectName, organizationName, authToken, log).then((result) => {
                     if (result) {
                         log.info('Workspace created.');
                     }
@@ -2876,7 +2876,7 @@ const workspaceOperation = (projectName, organizationName, authToken, log) => __
                     }
                 });
             }
-        });
+        }));
     }
 });
 exports.workspaceOperation = workspaceOperation;
