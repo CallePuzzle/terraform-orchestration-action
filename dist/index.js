@@ -2032,9 +2032,7 @@ const main = (input, log) => {
             .then(components => {
             const componentsToRun = getDirectories_1.getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log);
             componentsToRun.map(componentPath => {
-                log.info(componentPath);
-                workspaceCreation_1.workspaceOperation(componentPath, input.organizationName, input.tfeToken, log);
-                execTerraform_1.execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
+                workspaceCreation_1.workspaceOperation(componentPath, input.organizationName, input.tfeToken, log).then(() => execTerraform_1.execTerraform(processCwd, componentPath, input.workspace, input.apply, log));
             });
         });
     }).catch(e => {
@@ -2857,7 +2855,7 @@ function terraformApiCall(method, projectName, organizationName, authToken, log)
     });
 }
 // Logic execution
-const workspaceOperation = (projectName, organizationName, authToken, log) => {
+const workspaceOperation = (projectName, organizationName, authToken, log) => __awaiter(void 0, void 0, void 0, function* () {
     if (authToken === undefined || organizationName === undefined) {
         log.info('Missing params. Skipping...');
     }
@@ -2880,7 +2878,7 @@ const workspaceOperation = (projectName, organizationName, authToken, log) => {
             }
         });
     }
-};
+});
 exports.workspaceOperation = workspaceOperation;
 
 

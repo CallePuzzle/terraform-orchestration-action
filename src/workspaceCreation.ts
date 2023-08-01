@@ -71,7 +71,7 @@ async function terraformApiCall(method: string, projectName: string, organizatio
 }
 
 // Logic execution
-export const workspaceOperation = (projectName: string, organizationName: string | undefined, authToken: string | undefined, log: LogInterface): void => {
+export const workspaceOperation = async (projectName: string, organizationName: string | undefined, authToken: string | undefined, log: LogInterface): Promise<void> => {
   if (authToken === undefined || organizationName === undefined) {
     log.info('Missing params. Skipping...');
   } else {
