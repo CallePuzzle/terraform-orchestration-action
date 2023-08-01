@@ -2861,7 +2861,7 @@ const workspaceOperation = (projectName, organizationName, authToken, log) => __
     }
     else {
         log.info('Checking if workspace exists in TFE...');
-        terraformApiCall('get', projectName, organizationName, authToken, log).then((result) => {
+        yield terraformApiCall('get', projectName, organizationName, authToken, log).then((result) => {
             if (result) {
                 log.info('The workspace exists. Nothing to do...');
             }
