@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: Test
-        uses: CallePuzzle/terraform-orchestration-action@main
+        uses: ThingsO2/terraform-orchestration-action@main
         with:
           baseRef: ${{ github.event.pull_request.base.sha }}
           headRef: ${{ github.event.pull_request.head.sha }}
