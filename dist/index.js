@@ -2848,12 +2848,7 @@ function terraformApiCall(method, projectName, organizationName, authToken, log)
             }
         }
         catch (error) {
-            if (error.response.data) {
-                log.error(`There was an error when calling the API: ${error.response.data}`);
-            }
-            else {
-                log.error('Response data field came empty...');
-            }
+            log.error('There was an error when calling the API');
             return false;
         }
         return false;

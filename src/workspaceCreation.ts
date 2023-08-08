@@ -64,11 +64,7 @@ async function terraformApiCall(method: string, projectName: string, organizatio
       return false;
     }
   } catch (error) {
-    if (error.response.data) {
-      log.error(`There was an error when calling the API: ${error.response.data}`);
-    } else {
-      log.error('Response data field came empty...')
-    }
+    log.error('There was an error when calling the API')
     return false;
   }
   return false;
