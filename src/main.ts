@@ -1,8 +1,8 @@
 import { getGitModifiedDirectories } from './getGitModifiedDirectories'
 import { getDirectoriesToRun } from './getDirectories'
 import { checkMainGitPath } from './checkMainGitPath'
-import { execTerraform } from './execTerraform'
-import { workspaceOperation } from './workspaceCreation'
+import {execTerraform} from "./execTerraform"
+import {execTerragrunt} from "./execTerragrunt"
 
 interface Input {
     workingDirectory: string
@@ -12,8 +12,6 @@ interface Input {
     commonModules: Array<string>
     workspace: string | undefined
     apply: boolean
-    tfeToken: string | undefined
-    organizationName: string | undefined
 }
 
 export interface LogInterface {
@@ -30,20 +28,28 @@ export const main = (input: Input, log: LogInterface): void => {
     log.info(`Common modules: ${input.commonModules}`)
     log.info(`Workspace: ${input.workspace}`)
     log.info(`Apply: ${input.apply}`)
-    if (input.organizationName) {
-      log.info(`Terraform Enterprise Organization Name: ${input.organizationName}`)
-    }
     const processCwd = process.cwd()
-    log.info(`${processCwd}`)
     checkMainGitPath(log).then(() => {
         getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, input.excludeDirectories, log)
             .then(components => {
-                const componentsToRun = getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log)
-                componentsToRun.map(componentPath => {
-                  workspaceOperation(componentPath, input.organizationName, input.tfeToken, log).then(() => 
-                    execTerraform(processCwd, componentPath, input.workspace, input.apply, log)
-                  );
-                })
+              // what is inside components?
+              log.info(`**** components -> ${components.join(', ')}`)
+              const runAll = components.some(componentPath => {
+                // check if root path was update
+                return componentPath.includes(input.commonModules);
+            });
+
+            if (runAll) {
+              log.info("Running for all modules using Terragrunt . . . .");
+              components.map(componentPath => {
+                  execTerragrunt(processCwd, componentPath, input.workspace, input.apply, log);
+              });
+            } else {
+              log.info("Using Terraform for modules");
+              components.map(componentPath => {
+                  execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
+              });
+            }
             })
     }).catch(e => {
         log.error(e.message)

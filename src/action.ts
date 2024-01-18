@@ -16,8 +16,8 @@ try {
         excludeDirectories: core.getInput('excludeDirectories').split(','),
         commonModules: core.getInput('commonModules').split(','),
         apply: core.getInput('apply') === "true",
-        tfeToken: core.getInput('tfeToken') || undefined,
-        organizationName: core.getInput('organizationName') || undefined
+        // tfeToken: core.getInput('tfeToken') || undefined,
+        // organizationName: core.getInput('organizationName') || undefined
     }, new Log())
 } catch (error:any) {
     core.setFailed(error)
