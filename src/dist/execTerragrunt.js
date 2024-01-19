@@ -1,13 +1,10 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 exports.execTerragrunt = void 0;
-const child_process_1 = require("child_process");
-const path_1 = __importDefault(require("path"));
-const execTerragrunt = (processCwd, workspace, apply, log) => {
-    process.chdir(path_1.default.join(processCwd));
+var child_process_1 = require("child_process");
+var path_1 = require("path");
+exports.execTerragrunt = function (processCwd, workspace, apply, log) {
+    process.chdir(path_1["default"].join(processCwd));
     log.info('terragrunt run-all init');
     if (!spawnSyncTerragrunt(['run-all', 'init'], log)) {
         log.error('init failed');
@@ -32,13 +29,12 @@ const execTerragrunt = (processCwd, workspace, apply, log) => {
     }
     return true;
 };
-exports.execTerragrunt = execTerragrunt;
-const spawnSyncTerragrunt = (options, log) => {
-    const run = (0, child_process_1.spawnSync)('terragrunt', options);
+var spawnSyncTerragrunt = function (options, log) {
+    var run = child_process_1.spawnSync('terragrunt', options);
     log.info(run.output[1].toString());
     log.info(run.output[2].toString());
     if (run.status !== 0) {
-        const stderr = run.stderr;
+        var stderr = run.stderr;
         console.log('Salida de error:', stderr.toString());
         return false;
     }

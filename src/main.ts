@@ -28,31 +28,34 @@ export const main = (input: Input, log: LogInterface): void => {
     log.info(`Common modules: ${input.commonModules}`)
     log.info(`Workspace: ${input.workspace}`)
     log.info(`Apply: ${input.apply}`)
+    log.info("******** some changed here")
     const processCwd = process.cwd()
     checkMainGitPath(log).then(() => {
+      log.info("******** geGitModifiedDirs")
         getGitModifiedDirectories(input.workingDirectory, input.baseRef, input.headRef, input.excludeDirectories, log)
             .then(components => {
-              // what is inside components?
-              log.info(`**** components -> ${components.join(', ')}`)
+              log.info("******** check runAll")
               const runAll = components.some(componentPath => {
                 // check if root path was update
+
+                console.log("********componentPath --> " , componentPath)
+                const filtered = componentPath.filter((x : string) => x.includes(input.commonModules.toString()));
                 return componentPath.includes(input.commonModules);
             });
 
             if (runAll) {
               log.info("Running for all modules using Terragrunt . . . .");
-              components.map(componentPath => {
-                  execTerragrunt(processCwd, componentPath, input.workspace, input.apply, log);
-              });
+              // execTerragrunt(processCwd,input.workspace, input.apply, log);
             } else {
               log.info("Using Terraform for modules");
-              components.map(componentPath => {
-                  execTerraform(processCwd, componentPath, input.workspace, input.apply, log);
-              });
+              // const componentsToRun = getDirectoriesToRun(components, input.workingDirectory, input.commonModules, input.excludeDirectories, log)
+              // componentsToRun.map(componentPath => {
+              //   execTerraform( processCwd, componentPath, input.workspace, input.apply, log)
+              // });
             }
-            })
     }).catch(e => {
         log.error(e.message)
         throw e
     })
+  })
 }

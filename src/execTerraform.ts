@@ -3,6 +3,7 @@ import path from 'path'
 import { LogInterface } from './main'
 
 export const execTerraform = (processCwd: string, componentPath: string, workspace: string | undefined, apply: boolean, log: LogInterface): boolean => {
+    log.info(`processCwd -> ${processCwd}`)
     process.chdir(path.join(processCwd, componentPath));
 
     log.info('terraform init')
